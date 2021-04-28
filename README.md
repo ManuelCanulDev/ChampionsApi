@@ -9,7 +9,7 @@ _Este proyecto se realizo como examen del Parcial II de la materia de Desarrollo
 
 ## Autores ✒️
 
-* **Manuel Canul** - *Trabajo Inicial y Documentación* - [villanuevand](https://github.com/ManuelCanulDev)
+* **Manuel Canul** - *Trabajo Inicial y Documentación* - [Manuel Canul](https://github.com/ManuelCanulDev)
 
 ## Licencia 📄
 
