@@ -32,7 +32,7 @@ class Champions_model extends CI_Model
     public function get_champion($id_champion)
     {
         try {
-            return $this->db->get_where('champion', array('id' => $id_champion))->row_array();
+            return $this->db->get_where('champions', array('id' => $id_champion))->row_array();
         } catch (Exception $ex) {
             throw new Exception('Champions_model Model : Error in get_champion function - ' . $ex);
         }
@@ -45,7 +45,7 @@ class Champions_model extends CI_Model
             if (isset($params) && !empty($params)) {
                 $this->db->limit($params['limit'], $params['offset']);
             }
-            return $this->db->get('champion')->result_array();
+            return $this->db->get('champions')->result_array();
         } catch (Exception $ex) {
             throw new Exception('Champions_model model : Error in get_all_champions function - ' . $ex);
         }
@@ -54,7 +54,7 @@ class Champions_model extends CI_Model
     public function get_all_champions_count()
     {
         try {
-            $this->db->from('champion');
+            $this->db->from('champions');
             return $this->db->count_all_results();
         } catch (Exception $ex) {
             throw new Exception('Champions_model model : Error in get_all_champions_count function - ' . $ex);
@@ -64,7 +64,7 @@ class Champions_model extends CI_Model
     public function add_champion($params)
     {
         try {
-            $this->db->insert('champion', $params);
+            $this->db->insert('champions', $params);
             return $this->db->insert_id();
         } catch (Exception $ex) {
             throw new Exception('Champions_model model : Error in add_champion function - ' . $ex);
@@ -74,7 +74,7 @@ class Champions_model extends CI_Model
     public function delete_champion($id_champion)
     {
         try {
-            return $this->db->delete('champion', array('id' => $id_champion));
+            return $this->db->delete('champions', array('id' => $id_champion));
         } catch (Exception $ex) {
             throw new Exception('Champions_model model : Error in delete_champion function - ' . $ex);
         }
@@ -84,10 +84,18 @@ class Champions_model extends CI_Model
     {
         try {
             $this->db->where('id', $id_champion);
-            return $this->db->update('champion', $params);
+            return $this->db->update('champions', $params);
         } catch (Exception $ex) {
             throw new Exception('Champions_model model : Error in update_champion function - ' . $ex);
         }
+    }
+
+    public function get_last_id()
+    {
+        $query2 = $this->db->query('SELECT MAX(id) as ultimo_id FROM champions');
+
+        $row = $query2->row();
+        return $row->ultimo_id;
     }
 
     // ------------------------------------------------------------------------
