@@ -25,22 +25,13 @@ class champions extends REST_Controller
         $this->load->model('Habilities_model');
         $this->load->model('Stats_model');
         $this->load->model('Tips_model');
+        $this->load->helper('text');
+        $this->load->library('upload');
     }
 
     public function get_all_get()
     {
-
-        $total_rows = $this->Champions_model->get_all_champions_count();
-
-        $per_page = 10;
-
-        $uri_segment = 5;
-
-        $page = ($this->uri->segment(5)) ? $this->uri->segment(5) : 0;
-
-        //$query = $this->Champions_model->get_all_champions();
-
-        $champions = $this->Champions_model->get_all_champions(array('limit' => $per_page, 'offset' => $page));
+        $champions = $this->Champions_model->get_all_champions();
 
         $champion_habilities = $this->Habilities_model->get_all_habilities();
 
@@ -59,7 +50,7 @@ class champions extends REST_Controller
                 $tips = array();
 
                 foreach ($champion_habilities as $hability) {
-                    if($hability['champion'] == $champion['id']){
+                    if ($hability['champion'] == $champion['id']) {
 
                         array_push($habilites, array(
                             'id' => $hability['id'],
@@ -68,28 +59,28 @@ class champions extends REST_Controller
                             'effect' => $hability['effect'],
                             'cost' => $hability['cost'],
                             'range' => $hability['range'],
-                            'image' => base_url().'resources/spells/'.$champion['id'].'-'.$hability['id'].'.png'
+                            'image' => 'spells/' . $champion['id'] . '-' . $hability['id'] . '.png',
                         ));
                     }
                 }
 
                 foreach ($champion_stats as $statss) {
-                    if($statss['champion'] == $champion['id']){
+                    if ($statss['champion'] == $champion['id']) {
 
                         array_push($stats, array(
                             'name' => $statss['name'],
                             'value' => $statss['value'],
-                            'modifier_per_level' => $statss['modifier_per_level']
+                            'modifier_per_level' => $statss['modifier_per_level'],
                         ));
                     }
                 }
 
                 foreach ($champion_tips as $tipss) {
-                    if($tipss['champion'] == $champion['id']){
+                    if ($tipss['champion'] == $champion['id']) {
 
                         array_push($tips, array(
                             'id' => $tipss['id'],
-                            'tip' => $tipss['tip']
+                            'tip' => $tipss['tip'],
                         ));
                     }
                 }
@@ -98,48 +89,23 @@ class champions extends REST_Controller
                     'id' => $champion['id'],
                     'name' => $champion['name'],
                     'title' => $champion['title'],
-                    'lore' => $champion['lore'],
+                    'lore' => word_limiter($champion['lore'], 100),
                     'tags' => $champion['tags'],
-                    'image' => base_url().'resources/portraits/'.$champion['id'].'.jpg',
-                    'icon' => base_url().'resources/icons/'.$champion['id'].'.jpg',
+                    'image' => 'portraits/' . $champion['id'] . '.jpg',
+                    'icon' => 'icons/' . $champion['id'] . '.jpg',
                     'habilities' => $habilites,
                     'stats' => $stats,
-                    'tips' => $tips
+                    'tips' => $tips,
                 ));
             }
 
-            $siguiente_pagina = 0;
-
-            if ($this->uri->segment(5) == null) {
-                $siguiente_pagina = $per_page;
-
-                $this->response([
-                    'status' => true,
-                    'uri_segment' => $this->uri->segment(5),
-                    'error' => false,
-                    'message' => "OK",
-                    'system_code' => $this->code01,
-                    'data' => $data,
-                    'next_page' => 'http://localhost/championsApi/api/v1/champions/get_all/' . $siguiente_pagina,
-                ], 200);
-            } else {
-                $siguiente_pagina = $this->uri->segment(5) + $per_page;
-
-                $antes_pagina = $this->uri->segment(5) - $per_page;
-
-                $ultimaPagina = $antes_pagina < 0 ? 0 : $antes_pagina;
-
-                $this->response([
-                    'status' => true,
-                    'uri_segment' => $this->uri->segment(5),
-                    'last_page' => 'http://localhost/championsApi/api/v1/champions/get_all/' . $ultimaPagina,
-                    'error' => false,
-                    'message' => "OK",
-                    'system_code' => $this->code01,
-                    'data' => $data,
-                    'next_page' => 'http://localhost/championsApi/api/v1/champions/get_all/' . $siguiente_pagina,
-                ], 200);
-            }
+            $this->response([
+                'status' => true,
+                'error' => false,
+                'message' => "OK",
+                'system_code' => $this->code01,
+                'data' => $data,
+            ], 200);
 
         } else {
             $this->response([
@@ -162,7 +128,7 @@ class champions extends REST_Controller
         $habilites_new = array();
 
         foreach ($habilites as $hability) {
-            if($hability['champion'] == $champion['id']){
+            if ($hability['champion'] == $champion['id']) {
 
                 array_push($habilites_new, array(
                     'id' => $hability['id'],
@@ -171,7 +137,7 @@ class champions extends REST_Controller
                     'effect' => $hability['effect'],
                     'cost' => $hability['cost'],
                     'range' => $hability['range'],
-                    'image' => base_url().'resources/spells/'.$champion['id'].'-'.$hability['id'].'.png'
+                    'image' => 'spells/' . $champion['id'] . '-' . $hability['id'] . '.png',
                 ));
             }
         }
@@ -181,12 +147,12 @@ class champions extends REST_Controller
         $stats_new = array();
 
         foreach ($stats as $statss) {
-            if($statss['champion'] == $champion['id']){
+            if ($statss['champion'] == $champion['id']) {
 
                 array_push($stats_new, array(
                     'name' => $statss['name'],
                     'value' => $statss['value'],
-                    'modifier_per_level' => $statss['modifier_per_level']
+                    'modifier_per_level' => $statss['modifier_per_level'],
                 ));
             }
         }
@@ -195,11 +161,11 @@ class champions extends REST_Controller
         $tips_new = array();
 
         foreach ($tips as $tipss) {
-            if($tipss['champion'] == $champion['id']){
+            if ($tipss['champion'] == $champion['id']) {
 
                 array_push($tips_new, array(
                     'id' => $tipss['id'],
-                    'tip' => $tipss['tip']
+                    'tip' => $tipss['tip'],
                 ));
             }
         }
@@ -212,11 +178,11 @@ class champions extends REST_Controller
             'title' => $champion['title'],
             'lore' => $champion['lore'],
             'tags' => $champion['tags'],
-            'image' => base_url().'resources/portraits/'.$champion['id'].'.jpg',
-            'icon' => base_url().'resources/icons/'.$champion['id'].'.jpg',
+            'image' => base_url() . 'resources/portraits/' . $champion['id'] . '.jpg',
+            'icon' => base_url() . 'resources/icons/' . $champion['id'] . '.jpg',
             'habilities' => $habilites_new,
             'stats' => $stats_new,
-            'tips' => $tips_new
+            'tips' => $tips_new,
         ));
 
         if ($champion != null) {
@@ -239,10 +205,12 @@ class champions extends REST_Controller
 
     public function add_post()
     {
-        $name = $this->post('name');
-        $title = $this->post('title');
-        $lore = $this->post('lore');
-        $tags = $this->post('tags');
+        $name = $this->input->post('name');
+        $title = $this->input->post('title');
+        $lore = $this->input->post('lore');
+        $tags = $this->input->post('tags');
+
+        //echo "name => ".$name;
 
         if ($name == '' || $title == '' || $lore == '' || $tags == '') {
             $this->response([
@@ -252,37 +220,64 @@ class champions extends REST_Controller
                 'system_code' => $this->code03,
             ], 400);
         } else {
-            $ultimo_id = $this->Champions_model->get_last_id();
+            if (isset($_FILES["image"]["name"]) && isset($_FILES["icon"]["name"])) {
 
-            $nuevo_id = $ultimo_id + 1;
+                $ultimo_id = $this->Champions_model->get_last_id();
 
-            $champion = array(
-                'id' => $nuevo_id,
-                'name' => $name,
-                'title' => $title,
-                'lore' => $lore,
-                'tags' => $tags,
-            );
+                $nuevo_id = $ultimo_id + 1;
 
-            $id_champion = $this->Champions_model->add_champion($champion);
+                $champion = array(
+                    'id' => $nuevo_id,
+                    'name' => $name,
+                    'title' => $title,
+                    'lore' => $lore,
+                    'tags' => $tags,
+                );
 
-            $champion = $this->Champions_model->get_champion($nuevo_id);
+                $id_champion = $this->Champions_model->add_champion($champion);
 
-            if ($champion != null) {
-                $this->response([
-                    'status' => true,
-                    'error' => false,
-                    'message' => "OK",
-                    'system_code' => $this->code01,
-                    'data' => $champion,
-                ], 200);
+                $config['upload_path'] = './resources/portraits/';
+                $config['allowed_types'] = 'jpg|jpeg|png|gif';
+                $new_name1 = $nuevo_id;
+                $config['file_name'] = $new_name1;
+                $this->upload->initialize($config);
+                if ($this->upload->do_upload('image')) {
+
+                    $config2['upload_path'] = './resources/icons/';
+                    $config2['allowed_types'] = 'jpg|jpeg|png|gif';
+                    $new_name2 = $nuevo_id;
+                    $config2['file_name'] = $new_name2;
+                    $this->upload->initialize($config2);
+                    if ($this->upload->do_upload('icon')) {
+                        $this->response([
+                            'status' => true,
+                            'error' => false,
+                            'message' => "OK",
+                            'system_code' => $this->code01,
+                        ], 200);
+                    } else {
+                        $this->response([
+                            'status' => false,
+                            'error' => true,
+                            'message' => 'ERROR: ' . $this->code04,
+                            'system_code' => $this->code04,
+                        ], 400);
+                    }
+                } else {
+                    $this->response([
+                        'status' => false,
+                        'error' => true,
+                        'message' => 'ERROR: ' . $this->code04,
+                        'system_code' => $this->code04,
+                    ], 400);
+                }
             } else {
                 $this->response([
                     'status' => false,
                     'error' => true,
-                    'message' => 'ERROR',
+                    'message' => 'ERROR: ' . $this->code03,
                     'system_code' => $this->code03,
-                ], 200);
+                ], 400);
             }
         }
     }
@@ -293,14 +288,14 @@ class champions extends REST_Controller
 
         if ($id_champion != '') {
             $status_borrado = $this->Champions_model->delete_champion($id_champion);
-            if($status_borrado){
+            if ($status_borrado) {
                 $this->response([
                     'status' => true,
                     'error' => false,
                     'message' => 'OK',
                     'system_code' => $this->code01,
                 ], 200);
-            }else{
+            } else {
                 $this->response([
                     'status' => false,
                     'error' => true,
@@ -312,7 +307,7 @@ class champions extends REST_Controller
             $this->response([
                 'status' => false,
                 'error' => true,
-                'message' => 'ERROR: '.$this->code03,
+                'message' => 'ERROR: ' . $this->code03,
                 'system_code' => $this->code03,
             ], 200);
         }
@@ -343,8 +338,8 @@ class champions extends REST_Controller
                     'title' => $title,
                     'description' => $description,
                 );
-    
-                if ($this->Champions_model->update_champion($params,$id_champ)) {
+
+                if ($this->Champions_model->update_champion($params, $id_champ)) {
 
                     $championNew = $this->Champions_model->get_champion($id_champ);
 
@@ -363,7 +358,7 @@ class champions extends REST_Controller
                         'system_code' => $this->code04,
                     ], 200);
                 }
-            }else{
+            } else {
                 $this->response([
                     'status' => false,
                     'error' => true,
@@ -377,10 +372,9 @@ class champions extends REST_Controller
     public function login()
     {
         $this->_apiConfig([
-            'methods' => ['POST','GET'],
-            'requireAuthorization' => true
+            'methods' => ['POST', 'GET'],
+            'requireAuthorization' => true,
         ]);
     }
 
-    
 }

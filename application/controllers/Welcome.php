@@ -1,25 +1,51 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Welcome extends CI_Controller {
+class Welcome extends CI_Controller
+{
 
-	/**
-	 * Index Page for this controller.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/welcome
-	 *	- or -
-	 * 		http://example.com/index.php/welcome/index
-	 *	- or -
-	 * Since this controller is set as the default controller in
-	 * config/routes.php, it's displayed at http://example.com/
-	 *
-	 * So any other public methods not prefixed with an underscore will
-	 * map to /index.php/welcome/<method_name>
-	 * @see https://codeigniter.com/user_guide/general/urls.html
-	 */
-	public function index()
-	{
-		$this->load->view('welcome_message');
-	}
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->model('Champions_model');
+        $this->load->model('Habilities_model');
+        $this->load->model('Stats_model');
+        $this->load->model('Tips_model');
+        $this->load->helper('url');
+    }
+
+    public function index()
+    {
+        $this->load->view('welcome_message');
+    }
+
+    public function verChampion($id_champion = null)
+    {
+        if ($id_champion != null) {
+
+            if ($this->Champions_model->get_champion($id_champion)) {
+                $data['id_champion'] = $id_champion;
+                $this->load->view('view_champion', $data);
+            } else {
+                redirect('/');
+            }
+        } else {
+            redirect('/');
+        }
+    }
+
+    public function addChampion()
+    {
+        $this->load->view('add_champion');
+    }
+
+    public function verItems()
+    {
+        if ($this->Champions_model->get_champion($id_champion)) {
+            $data['id_champion'] = $id_champion;
+            $this->load->view('view_champion', $data);
+        } else {
+            redirect('/');
+        }
+    }
 }

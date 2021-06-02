@@ -52,7 +52,3 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'welcome';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
-
-$route['Promovidos/verTodos'] = 'Promovidos/verTodos';
-$route['promovidos/(:any)'] = 'Promovidos/$1';
-$route['promovidos/(:any)/(:any)'] = 'Promovidos/$1/$2';
